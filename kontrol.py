@@ -13,31 +13,30 @@ HERE = pathlib.Path(__file__).resolve().parent
 ODEV = HERE / "odev3.py"
 TIMEOUT = 10
 
-# Meraklısına'daki input() satırlarına, odev3.py'nin söylediği gibi sırayla bunlar yazılır.
-INPUTS = ["29", "10", "1923"]
+# 5. görevdeki input() satırlarına, odev3.py'nin söylediği gibi sırayla bunlar yazılır.
+INPUTS = ["50", "25", "37"]
 
 EXPECTED = {
-    "1. Basamaklar": ["Basamak sayısı: 4", "Basamak toplamı: 10", "Ters çevrilmiş: 6202"],
-    "2. Kağıdı Everest'e katlamak": ["27 katlamada Everest'i geçer.", "Kalınlık: 13421.77 m"],
-    "3. Hacettepe FizzBuzz": ["1", "2", "Hacet", "4", "tepe", "Hacet", "7", "8", "Hacet", "tepe",
+    "1. Hacettepe FizzBuzz": ["1", "2", "Hacet", "4", "tepe", "Hacet", "7", "8", "Hacet", "tepe",
                               "11", "Hacet", "13", "14", "Hacettepe"],
+    "2. Kağıdı Everest'e katlamak": ["27 katlamada Everest'i geçer.", "Kalınlık: 13421.77 m"],
+    "3. Gizli mesaj": ["Python harika", "Atlanan rakam: 10"],
     "4. Sayı üçgeni": ["1", "12", "123", "1234", "12345"],
-    "5. Gizli mesaj": ["Python harika", "Sdaelrıs", "Salı ders"],
+    "5. Sayı tahmin oyunu": ["Tahmin: 50", "Daha küçük.", "Tahmin: 25", "Daha büyük.", "Tahmin: 37",
+                             "3 denemede bildiniz."],
 }
-OPTIONAL = {"Meraklısına": ["Gün: 29", "Ay: 10", "Yıl: 1923", "O gün Pazartesi."]}
+OPTIONAL = {"Meraklısına": ["Basamak sayısı: 4", "Basamak toplamı: 10", "Ters çevrilmiş: 6202"]}
 
 # Görevin başındaki value değiştirilip dosya bir kez daha çalıştırılır. Sonuç o value'dan
 # hesaplanıyorsa çıktı da değişir; elle yazılmışsa aynı kalır.
 # (görev, aranan satır, yerine yazılan satır, beklenen çıktı, yalnızca ilk satırlara mı bakılır)
 VARIANTS = [
-    ("1. Basamaklar", r"^n\s*=\s*2026[ \t]*$", "n = 907",
-     ["Basamak sayısı: 3", "Basamak toplamı: 16", "Ters çevrilmiş: 709"], False),
+    ("3. Gizli mesaj", r'^message\s*=\s*"P1y2t3h4o5n h6a7r8i9k0a"[ \t]*$', 'message = "k4a1l2e3m s5i6l7g8i"',
+     ["kalem silgi", "Atlanan rakam: 8"], False),
     ("4. Sayı üçgeni", r"^n\s*=\s*5[ \t]*$", "n = 3", ["1", "12", "123"], False),
-    ("5. Gizli mesaj", r'^message\s*=\s*"Phyatrhiokna"[ \t]*$', 'message = "ksaillegmi"',
-     ["kalem silgi"], True),
+    ("5. Sayı tahmin oyunu", r"^secret\s*=\s*37[ \t]*$", "secret = 25",
+     ["Tahmin: 50", "Daha küçük.", "Tahmin: 25", "2 denemede bildiniz."], False),
 ]
-
-STEP2 = r"\[[^\[\]]*:[^\[\]]*:\s*2\s*\]"
 
 
 def run_with_inputs(path):
@@ -124,22 +123,24 @@ def source_notes(title, src):
     code = "\n".join(block(src, f'print("=== {title.split(".")[0]}.', f'print("=== {titles[i + 1].split(".")[0]}'))
     notes = []
     if title.startswith("1."):
-        if not re.search(r"\bwhile\b", code):
-            notes.append("basamakları while ile alın")
-        if not re.search(r"%\s*10\b", code) or not re.search(r"//\s*10\b", code):
-            notes.append("son basamağı n % 10 ile, geri kalan sayıyı n // 10 ile bulun")
-        if "6202" in code:
-            notes.append("6202'yi elle yazmayın, reverse bir accumulator ile kurulsun")
+        if not re.search(r"\bfor\b", code) or "range(" not in code:
+            notes.append("sayıları for ve range() ile dolaşın")
+        if not re.search(r"\belif\b", code) or not re.search(r"\belse\b", code):
+            notes.append("if, elif ve else kullanın")
     if title.startswith("2."):
         if not re.search(r"\bwhile\b", code):
             notes.append("kağıdı while ile, Everest'e ulaşana kadar katlayın")
         if re.search(r"\b27\b", code) or "13421" in code:
             notes.append("27'yi ya da kalınlığı elle yazmayın, loop katlayıp saysın")
     if title.startswith("3."):
-        if not re.search(r"\bfor\b", code) or "range(" not in code:
-            notes.append("sayıları for ve range() ile dolaşın")
-        if not re.search(r"\belif\b", code) or not re.search(r"\belse\b", code):
-            notes.append("if, elif ve else kullanın")
+        if not re.search(r"\bfor\s+\w+\s+in\s+message\b", code):
+            notes.append("message'ı for ile harf harf dolaşın (for ch in message:)")
+        if not re.search(r"\bcontinue\b", code):
+            notes.append("rakamlarda continue ile sıradaki karaktere geçin")
+        if not re.search(r"\bsecret\s*\+=", code):
+            notes.append("harfleri secret'a += ile ekleyin")
+        if "Python" in code or "harika" in code:
+            notes.append("mesajı elle yazmayın, loop bulsun")
     if title.startswith("4."):
         if len(re.findall(r"\b(?:for|while)\b", code)) < 2:
             notes.append("satırları iç içe iki loop ile kurun")
@@ -148,16 +149,12 @@ def source_notes(title, src):
         if "str(" not in code:
             notes.append("sayıyı row'a str() ile ekleyin")
     if title.startswith("5."):
-        if len(re.findall(r"\bmessage\s*" + STEP2, code)) < 2:
-            notes.append("(a) message'ın çift ve tek index'teki harflerini slicing ile ayırın")
-        if not re.search(r"range\(\s*len\(", code):
-            notes.append("(b) index'leri for ve range(len(first)) ile dolaşın")
-        if not re.search(r"\bsecret\s*\+=", code):
-            notes.append("(b) harfleri secret'a += ile ekleyin")
-        if len(re.findall(r"\bsecret\s*" + STEP2, code)) < 2:
-            notes.append("(b) secret'ı da (a)'daki gibi slicing ile çözün")
-        if "harika" in code or "Sdaelr" in code:
-            notes.append("mesajı ya da sonucu elle yazmayın, slicing ve loop bulsun")
+        if not re.search(r"\bwhile\s+True\b", code):
+            notes.append("tahminleri while True ile isteyin")
+        if not re.search(r"\bbreak\b", code):
+            notes.append("doğru tahminde break ile loop'tan çıkın")
+        if not re.search(r"\+=\s*1\b", code):
+            notes.append("tahminleri bir counter ile sayın (+= 1)")
     return notes
 
 

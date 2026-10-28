@@ -11,11 +11,69 @@ Yukarıdaki kart bu haftanın özeti. Aşağıda aynı konuların daha ayrıntı
 **Son teslim:** 8 Kasım 2026 Pazar, 23.59\
 **Teslim:** [Ödev 3 teslim formu](https://forms.gle/2Ei4AbGpuuJNtN5w7)
 
-Bu ödevin sonunda while ve for loop'larıyla (döngüler) sayan ve toplayan, nested loops (iç içe döngüler) ile satır satır şekil kuran, str'leri (karakter dizileri) index (indis) ve slicing (dilimleme) ile parçalayan programlar yazabileceksiniz.
+Bu ödevin sonunda if, elif ve else ile karar veren, while ve for loop'larıyla (döngüler) sayan ve toplayan, bir str'yi (karakter dizisi) harf harf dolaşan, nested loops (iç içe döngüler) ile satır satır şekil kuran ve break ile loop'tan çıkan programlar yazabileceksiniz.
 
 ## Bu ödevde kullanacaklarımız
 
 Hepsini Ders 3'te gördük. Görevlerde gereken birkaç Ders 2 konusunu da en sona ekledim.
+
+### if, else ve elif
+if bir şart sorar ve iki noktayla biter; altındaki girintili satırlar onun block'udur. Şart True ise block çalışır, False ise atlanır. else'in kendi şartı yoktur: if ile aynı hizada yazılır ve şart False olunca çalışır.
+
+```python
+score = 40
+if score >= 50:
+    print("geçti")
+else:
+    print("kaldı")
+print("bitti")
+```
+
+```text
+kaldı
+bitti
+```
+
+`bitti` block'un dışında olduğu için şart ne olursa olsun yazılır.
+
+elif, "else if" demektir: yalnızca üstündeki şartlar False ise sorulur. Şartlar yukarıdan aşağı sınanır; ilk True olanın block'u çalışır, gerisine bakılmaz bile. Bu yüzden sıra önemlidir:
+
+```python
+score = 95
+if score >= 50:
+    print("Geçti")
+elif score >= 90:
+    print("Yüksek onur")
+```
+
+```text
+Geçti
+```
+
+95, 90'dan da büyük ama ilk True `score >= 50` olduğu için ikinci şart hiç sınanmadı. Daha dar olan `score >= 90` şartını üste yazınca çıktı `Yüksek onur` olur.
+
+Ayrı iki if ise iki ayrı sorudur, ikisi de sorulur:
+
+```python
+score = 90
+if score >= 85:
+    print("A3 ve üstü")
+if score >= 50:
+    print("geçti")
+```
+
+```text
+A3 ve üstü
+geçti
+```
+
+Aynı soruya tek cevap istiyorsanız elif, birbirinden bağımsız sorular için ayrı if yazın.
+
+**Sık yapılan hata:** if satırından sonraki satırı girintisiz yazmak:
+
+```text
+IndentationError: expected an indented block after 'if' statement on line 2
+```
 
 ### while loop
 `while`, devam şartı True olduğu sürece altındaki block'u (blok) tekrar tekrar çalıştırır. Şart her turun başında yeniden sorulur. False olduğunda loop biter ve program loop'tan sonraki satırdan devam eder.
@@ -140,7 +198,7 @@ Kaç tur döneceği belliyse `for`, belli değilse `while` kullanın.
 **Sık yapılan hata:** bitişi bir eksik yazmak. 1'den 10'a kadar saymak için `range(1, 11)` gerekir; `range(1, 10)` 9'da durur. `for i in 10:` gibi range olmadan bir sayı yazarsanız da `TypeError: 'int' object is not iterable` alırsınız.
 
 ### for içinde if, elif ve else
-Ders 2'deki if, elif ve else loop'un gövdesinde de çalışır ve her turda yeniden sorulur. Bir sayının başka bir sayının katı olup olmadığını `%` operator'ı (işlemci) söyler: kalan 0 ise kattır.
+if, elif ve else loop'un gövdesinde de çalışır ve her turda yeniden sorulur. Bir sayının başka bir sayının katı olup olmadığını `%` operator'ı (işlemci) söyler: kalan 0 ise kattır.
 
 ![if ile saymak: 0'dan 29'a 3'ün katları](img/ders3-count-multiples.png)
 
@@ -158,22 +216,6 @@ for n in range(1, 5):
 3 tek
 4 çift
 ```
-
-Şartlar yukarıdan aşağı sınanır. İlk True olanın block'u çalışır, gerisine bakılmaz bile. Bu yüzden sıra önemlidir:
-
-```python
-score = 95
-if score >= 50:
-    print("Geçti")
-elif score >= 90:
-    print("Yüksek onur")
-```
-
-```text
-Geçti
-```
-
-95, 90'dan da büyük ama ilk True `score >= 50` olduğu için ikinci şart hiç sınanmadı. Daha dar olan `score >= 90` şartını üste yazınca çıktı `Yüksek onur` olur.
 
 ### Nested loops (iç içe döngüler)
 Bir loop'un gövdesinde başka bir loop olabilir. İç loop, dış loop'un her turunda baştan sona çalışır. Her katta o katın bütün kapılarına ekmek bırakan kapıcıyı düşünün: katlar dış loop, kapılar iç loop.
@@ -247,62 +289,30 @@ Ders 3
 TypeError: can only concatenate str (not "int") to str
 ```
 
-### Index (indis) ve len()
-str de range gibi bir sequence'tir (dizi): karakterleri sırayla durur ve her karakterin bir index'i vardır. Index 0'dan başlar ve köşeli parantez içine yazılır. Negatif index sondan sayar, `-1` son karakterdir.
-
-![Index cetveli: code = "BBM101"](img/ders3-index-ruler.png)
-
-| Karakter | `B` | `e` | `y` | `t` | `e` | `p` | `e` |
-|---|---|---|---|---|---|---|---|
-| Index | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
-| Negatif index | -7 | -6 | -5 | -4 | -3 | -2 | -1 |
-
-`len()` bir str'nin length'ini (uzunluk), yani karakter sayısını verir. Son karakterin index'i `len - 1`'dir.
+### str üzerinde for
+str de bir sıradır: for onun karakterlerini sırayla tek tek alır. Her turda `ch` bir sonraki karakteri gösterir; adını siz koyarsınız.
 
 ```python
-word = "Beytepe"
-print(word[0], word[3], word[-1])
-print(len(word))
-print(word[len(word) - 1])
+code = "MAT101"
+for ch in code:
+    print(ch)
 ```
 
 ```text
-B t e
-7
-e
+M
+A
+T
+1
+0
+1
 ```
 
-**Sık yapılan hata:** son index'ten sonrasını istemek. `"Beytepe"` için `word[7]` yoktur:
-
-```text
-IndexError: string index out of range
-```
-
-str immutable'dır (değişmez). `word[0] = "b"` yazarsanız `TypeError: 'str' object does not support item assignment` alırsınız. Bir str'yi değiştirmek yerine `+=` ile yeni bir str kurarız.
-
-### Bir str'yi index ile dolaşmak
-Index'i bir variable da verebilir. `range(len(month))`, `month`'un bütün index'lerini sırayla verir; `month[i]` de o turdaki karakterdir.
+Bir counter ile, örneğin bir harfin kaç kez geçtiğini sayabilirsiniz:
 
 ```python
-month = "Ekim"
-for i in range(len(month)):
-    print(i, month[i])
-```
-
-```text
-0 E
-1 k
-2 i
-3 m
-```
-
-Bir counter ile birlikte, örneğin bir harfin kaç kez geçtiğini sayabilirsiniz:
-
-```python
-word = "Hacettepe"
 count = 0
-for i in range(len(word)):
-    if word[i] == "e":
+for ch in "Hacettepe":
+    if ch == "e":
         count += 1
 print(count)
 ```
@@ -311,33 +321,55 @@ print(count)
 3
 ```
 
-**Sık yapılan hata:** `range(len(word) + 1)` yazmak. Son turda `i` length'e eşit olur ve `IndexError` alırsınız. `range(len(word))` zaten son index'te durur.
+Bir karakterin rakam olup olmadığını Ders 2'deki `in` söyler: `ch in "0123456789"` True ise `ch` bir rakamdır.
 
-### Slicing (dilimleme)
-Slicing, iki sınır arasındaki karakterleri yeni bir str olarak verir. Tablet çikolatayı çizgisinden kırmaya benzer: parçalar ayrılır ama hiçbir kare kaybolmaz. Bitiş, range'de olduğu gibi dahil değildir. Üçüncü sayı adımdır.
+### while True ve break
+`break`, içinde bulunduğu loop'u hemen bitirir; akış loop'tan sonraki satırdan devam eder. `while True`'nun şartı hiç False olmaz, böyle bir loop'tan ancak break ile çıkılır. Kullanıcı bir bitiş işareti ya da doğru cevabı yazana kadar sormak için kullanılır:
 
-```text
-<str>[<başla>:<bitiş>:<adım>]
+```python
+total = 0
+while True:
+    score = int(input("Puan (bitirmek için 0): "))
+    if score == 0:
+        break
+    total += score
+print("Toplam:", total)
 ```
 
-![Slicing: sınırlar 0'dan 6'ya](img/ders3-slice-ruler.png)
+```text
+Puan (bitirmek için 0): 70
+Puan (bitirmek için 0): 90
+Puan (bitirmek için 0): 0
+Toplam: 160
+```
 
-`word = "Beytepe"` için:
+Buradaki 0 bir sentinel'dir (bitiş işareti): kendisi toplanmaz, yalnızca loop'u bitirir.
 
-| Yazılış | Sonuç | Ne alır |
-|---|---|---|
-| `word[0:3]` | `"Bey"` | 0, 1 ve 2. index'i; 3 dahil değil |
-| `word[3:]` | `"tepe"` | Bitiş yazılmazsa sona kadar |
-| `word[:3]` | `"Bey"` | Başla yazılmazsa baştan |
-| `word[-4:]` | `"tepe"` | Son dört karakter |
-| `word[::2]` | `"Byee"` | 0'dan başlayıp ikişer atlayarak, yani çift index'ler |
-| `word[1::2]` | `"etp"` | 1'den başlayıp ikişer atlayarak, yani tek index'ler |
-| `word[::-1]` | `"epetyeB"` | Adım -1, yani tersten |
-| `word[2:100]` | `"ytepe"` | Sınırı aşan slice hata vermez, olduğu kadarını alır |
+**Sık yapılan hata:** break'i bir loop'un dışına yazmak. Python dosyanın hiçbir satırını çalıştırmaz:
 
-Slicing yeni bir str yapar; `word` değişmez, hala `"Beytepe"`dir.
+```text
+SyntaxError: 'break' outside loop
+```
 
-**Sık yapılan hata:** bitişi dahil sanmak. `word[0:3]`, 3. index'teki `t`'yi almaz. Bir de şunu karıştırmayın: sınırı aşan index `IndexError` verir, sınırı aşan slice vermez.
+### continue
+`continue` loop'u bitirmez, yalnızca o turu bitirir: akış loop'un başına döner ve loop sıradaki turla devam eder.
+
+```python
+for i in range(1, 6):
+    if i % 2 == 0:
+        continue
+    print(i)
+```
+
+```text
+1
+3
+5
+```
+
+break ile karıştırmayın: break loop'u bitirir, continue yalnızca o turu. Bu kodda continue yerine break yazsaydık çıktı yalnızca `1` olurdu.
+
+**Sık yapılan hata:** while loop'unda continue'yu sayacı artıran satırdan önce yazmak. O turda sayaç artmaz, şart hep True kalır ve loop hiç bitmez.
 
 ### Ders 2'den: f-string, :.2f ve input()
 f-string'de `{}` içine yazılan expression'ın (ifade) value'su yazının içine yerleşir. `:.2f` value'yu noktadan sonra iki basamakla gösterir; variable'ın kendisi değişmez.
@@ -371,15 +403,15 @@ Yıl: 2026
 
 Görevlerin ayrıntısı ve her birinin beklenen çıktısı `odev3.py` dosyasının içinde.
 
-1. **Basamaklar:** 2026'nın basamaklarını while ile sağdan sola alacak, bir counter ile sayacak, bir accumulator ile toplayacak ve sayıyı ters çevireceksiniz.
-2. **Kağıdı Everest'e katlamak:** 0,1 mm'lik bir kağıdı kalınlığı Everest'i geçene kadar katlayacak, katlamaları sayacak ve kalınlığı metre olarak yazdıracaksınız.
-3. **Hacettepe FizzBuzz:** for ve range() ile 1'den 15'e kadar her sayı için 3'ün katına Hacet, 5'in katına tepe, ikisinin de katına Hacettepe yazdıracaksınız.
-4. **Sayı üçgeni:** Derste kurduğumuz yıldız üçgeni gibi, iç içe iki loop ile 1, 12, 123, 1234 ve 12345 satırlarını kuracaksınız.
-5. **Gizli mesaj:** Harfleri sırayla dizilmiş iki kelimeyi slicing ile ayıracak, sonra range(len()) ile kendi gizli mesajınızı kurup yeniden çözeceksiniz.
+1. **Hacettepe FizzBuzz:** for ve range() ile 1'den 15'e kadar her sayı için 3'ün katına Hacet, 5'in katına tepe, ikisinin de katına Hacettepe yazdıracaksınız. if, elif ve else'i hangi sırayla yazdığınız önemli.
+2. **Kağıdı Everest'e katlamak:** 0,1 mm'lik bir kağıdı kalınlığı Everest'i geçene kadar while ile katlayacak, katlamaları sayacak ve kalınlığı metre olarak yazdıracaksınız.
+3. **Gizli mesaj:** Harflerin arasına saklanmış rakamları for ve continue ile atlayıp mesajı çözecek, atlanan rakamları da sayacaksınız.
+4. **Sayı üçgeni:** İç içe iki loop ile 1, 12, 123, 1234 ve 12345 satırlarını kuracaksınız.
+5. **Sayı tahmin oyunu:** while True ile tahmin isteyecek, "Daha büyük." ya da "Daha küçük." diye ipucu verecek, doğru tahminde break ile çıkıp kaç denemede bilindiğini yazdıracaksınız.
 
-Zorunlu olmayan bir **Meraklısına** görevi de var: Zeller'in formülüyle bir tarihin haftanın hangi gününe denk geldiğini bulacaksınız.
+Zorunlu olmayan bir **Meraklısına** görevi de var: 2026'nın basamaklarını while ile sayacak, toplayacak ve sayıyı ters çevireceksiniz.
 
-Yalnızca Ders 1, 2 ve 3'te gördüğümüz yapıları kullanın; list Ders 4'te gelecek.
+Yalnızca Ders 1, 2 ve 3'te gördüğümüz yapıları kullanın.
 
 ## Nasıl çalışılır
 
@@ -387,11 +419,11 @@ Yalnızca Ders 1, 2 ve 3'te gördüğümüz yapıları kullanın; list Ders 4'te
 2. Her görevde `# TODO` satırının yerine kodunuzu yazın.
 3. Dosyayı **Run** ile çalıştırın ve çıktıyı görevin "Beklenen çıktı" kısmıyla karşılaştırın.
 
-Meraklısına'yı yaparsanız program sizden gün, ay ve yılı ister; Run penceresine yazıp Enter'a basın.
+5. görevde program sizden tahmin ister: Run penceresine sırayla 50, 25 ve 37 yazın, her birinden sonra Enter'a basın.
 
 ## Kendi kendinize kontrol
 
-Bitirince `kontrol.py`'yi PyCharm'da açıp **Run** deyin. Her görev için geçti ya da kaldı yazar, kaldıysa beklenen satırı ve sizin satırınızı gösterir. Görevin istediği yapıyı, örneğin while'ı, `+=`'yi ya da slicing'i kullanıp kullanmadığınıza da bakar. 1, 4 ve 5. görevlerde baştaki value'yu değiştirip dosyayı bir kez daha çalıştırır; sonucu elle yazdıysanız bunu fark eder. Meraklısına'nın üç sorusuna 29, 10 ve 1923'ü kendisi yazar. Dosya 10 saniyede bitmezse durdurur ve hangi görevde takıldığını söyler. Kontrol not vermez, sadece size yol gösterir.
+Bitirince `kontrol.py`'yi PyCharm'da açıp **Run** deyin. Her görev için geçti ya da kaldı yazar, kaldıysa beklenen satırı ve sizin satırınızı gösterir. Görevin istediği yapıyı, örneğin while'ı, continue'yu ya da break'i kullanıp kullanmadığınıza da bakar. 3, 4 ve 5. görevlerde baştaki value'yu değiştirip dosyayı bir kez daha çalıştırır; sonucu elle yazdıysanız bunu fark eder. 5. görevin sorularına 50, 25 ve 37'yi kendisi yazar. Dosya 10 saniyede bitmezse durdurur ve hangi görevde takıldığını söyler. Kontrol not vermez, sadece size yol gösterir.
 
 ## Teslim
 
